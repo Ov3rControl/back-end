@@ -11,7 +11,7 @@ async function bootstrap() {
   } else {
     app.enableCors({ origin: serverConfig.origin });
   }
-
+  app.setGlobalPrefix('api');
   const port = process.env.PORT || serverConfig.port;
   await app.listen(port);
 }
