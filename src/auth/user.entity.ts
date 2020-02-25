@@ -6,7 +6,7 @@ import {
   Entity,
 } from 'typeorm';
 @Entity()
-@Unique(['userId, username'])
+//@Unique(['userId, username'])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,5 +18,5 @@ export class User extends BaseEntity {
   username: string;
 
   @Column()
-  profilePicture: Blob;
+  profilePicture: string;
 }
