@@ -5,12 +5,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { map, catchError } from 'rxjs/operators';
-import { Observable } from 'rxjs';
 
 import { UserRepository } from './user.repository';
 import { AuthCredentialsDto } from './dto/auth-credentials';
-import { AuthenticatedUserIdGizmo } from './dto/authenticated-userId.gizmo';
+import { GizmoUserLoginData } from './dto/user-login-data.gizmo';
 
 @Injectable()
 export class AuthService {
@@ -23,28 +21,32 @@ export class AuthService {
    * @param {object} AuthCredentialsDto - user's identifications.
    * @param {string} AuthCredentialsDto.username - user's username.
    * @param {string} AuthCredentialsDto.password - user's password.
-   * @returns {Observable<AuthenticatedUserIdGizmo>} user's userId,
+   * @returns {Promise<GizmoUserLoginData>} user's userId,
    */
 
-  login(
+  async login(
     authCredentialsDto: AuthCredentialsDto,
-  ): Observable<AuthenticatedUserIdGizmo> {
+  ): Promise<GizmoUserLoginData> {
     const { username, password } = authCredentialsDto;
 
-    return this.http.get<any>(`users/${username}/${password}/valid`).pipe(
-      map(response => {
-        const userId: AuthenticatedUserIdGizmo =
-          response.data.result.identity.userId; //Gizmo userId
+    return this.http
+      .get<any>(`users/${username}/${password}/valid`)
+      .toPromise()
+      .then(response => {
         if (!response.data.result.result) {
           // result === 0 means Authenticated Successfully in Gizmo
-          return userId;
+          const userId: number = response.data.result.identity.userId; //Gizmo userId
+          return {
+            message: `Welcome ${username}`,
+            token: userId,
+            username,
+          };
         } else {
           return new UnauthorizedException().message;
         }
-      }),
-      catchError(() => {
+      })
+      .catch(() => {
         throw new RequestTimeoutException();
-      }),
-    );
+      });
   }
 }

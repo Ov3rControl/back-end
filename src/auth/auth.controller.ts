@@ -1,8 +1,7 @@
 import { Controller, Body, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credentials';
-import { AuthenticatedUserIdGizmo } from './dto/authenticated-userId.gizmo';
-import { Observable } from 'rxjs';
+import { GizmoUserLoginData } from './dto/user-login-data.gizmo';
 
 @Controller('auth')
 export class AuthController {
@@ -10,7 +9,7 @@ export class AuthController {
   @Get('/login')
   login(
     @Body() authCredentialsDto: AuthCredentialsDto,
-  ): Observable<AuthenticatedUserIdGizmo> {
+  ): Promise<GizmoUserLoginData> {
     return this.authService.login(authCredentialsDto);
   }
 }
