@@ -9,6 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import { AuthCredentialsDto } from './dto/auth-credentials';
 import { GizmoUserLoginData } from './dto/user-login-data.gizmo';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +18,7 @@ export class AuthService {
     private readonly http: HttpService,
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
+    private jwtService: JwtService,
   ) {}
   /**
    * @param {object} AuthCredentialsDto - user's identifications.
@@ -35,17 +38,19 @@ export class AuthService {
       .then(response => {
         if (!response.data.result.result) {
           // result === 0 means Authenticated Successfully in Gizmo
-          const userId: number = response.data.result.identity.userId; //Gizmo userId
+          const userId: JwtPayload = response.data.result.identity.userId; //Gizmo userId
+          const accessToken = this.jwtService.sign(userId);
           return {
             message: `Welcome ${username}`,
-            token: userId,
+            accessToken,
             username,
           };
         } else {
           return new UnauthorizedException().message;
         }
       })
-      .catch(() => {
+      .catch(error => {
+        console.log(error);
         throw new RequestTimeoutException();
       });
   }
