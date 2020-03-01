@@ -1,8 +1,8 @@
-import { IsString, MinLength, MaxLength, IsJWT } from 'class-validator';
+import { IsString, MinLength, MaxLength, IsJWT, IsInt } from 'class-validator';
 
 export class GizmoUserLoginData {
-  @IsString()
-  message: string;
+  @IsInt()
+  userId: number;
 
   @IsString()
   @MinLength(4)
