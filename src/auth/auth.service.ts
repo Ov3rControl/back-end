@@ -40,6 +40,8 @@ export class AuthService {
         if (!response.data.result.result) {
           // result === 0 means Authenticated Successfully in Gizmo
           const userId: JwtPayload = response.data.result.identity.userId; //Gizmo userId
+          this.userRepository.saveLoginData(username, userId); // Store userId & Username of the logged in user in the DB
+
           const accessToken = this.jwtService.sign(userId);
           return {
             message: `Welcome ${username}`,

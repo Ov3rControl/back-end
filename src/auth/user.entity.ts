@@ -1,22 +1,16 @@
-import {
-  BaseEntity,
-  PrimaryGeneratedColumn,
-  Column,
-  Unique,
-  Entity,
-} from 'typeorm';
+import { BaseEntity, PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
 @Entity()
 //@Unique(['userId, username'])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   userId: number;
 
-  @Column()
+  @Column({ unique: true })
   username: string;
 
-  @Column()
+  @Column({ nullable: true })
   profilePicture: string;
 }
