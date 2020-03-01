@@ -4,6 +4,7 @@ import {
   RequestTimeoutException,
   UnauthorizedException,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -15,11 +16,13 @@ import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger('AuthService');
+
   public constructor(
     private readonly http: HttpService,
     @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
-    private jwtService: JwtService,
+    private readonly userRepository: UserRepository,
+    private readonly jwtService: JwtService,
   ) {}
   /**
    * @param {object} AuthCredentialsDto - user's identifications.
@@ -43,6 +46,10 @@ export class AuthService {
           this.userRepository.saveLoginData(username, userId); // Store userId & Username of the logged in user in the DB
 
           const accessToken = this.jwtService.sign(userId);
+          this.logger.verbose(
+            `JWT : ${accessToken} Generated With UserId: ${userId} for ${username}.`,
+          );
+
           return {
             message: `Welcome ${username}`,
             accessToken,
