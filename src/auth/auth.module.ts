@@ -14,7 +14,7 @@ import { JwtStrategy } from './jwt.strategy';
     HttpModule.register({
       timeout: 5000,
       baseURL: config.get('server').host,
-      headers: { Authorization: 'Basic YWRtaW46YWRtaW4=' },
+      headers: config.get('authorization'),
     }),
     JwtModule.register({
       secret: config.get('jwt').secret,

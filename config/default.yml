@@ -10,4 +10,4 @@ db:
 jwt:
   expiresIn: 3600
 
-authorization: 'Basic YWRtaW46YWRtaW4='
+authorization: { Authorization: 'Basic YWRtaW46YWRtaW4=' }

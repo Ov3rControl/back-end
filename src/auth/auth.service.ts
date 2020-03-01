@@ -3,6 +3,7 @@ import {
   HttpService,
   RequestTimeoutException,
   UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -50,8 +51,15 @@ export class AuthService {
         }
       })
       .catch(error => {
-        console.log(error);
-        throw new RequestTimeoutException();
+        const errorStatusCode = error.response.status;
+        switch (errorStatusCode) {
+          case 401:
+            throw new UnauthorizedException();
+          case 500:
+            throw new InternalServerErrorException();
+          default:
+            throw new RequestTimeoutException();
+        }
       });
   }
 }
